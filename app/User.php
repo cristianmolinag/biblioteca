@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Biblioteca;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -9,14 +9,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use Notifiable;
-
+    protected $table = 'usuario';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'nombres', 'apellidos', 'documento', 'correo', 'password','tipo_usuario', 'estado'
     ];
 
     /**
