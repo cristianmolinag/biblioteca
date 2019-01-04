@@ -18,3 +18,4 @@
 Auth::routes(['register' => false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/panel_de_control', 'DashboardController@index')->name('admin');
