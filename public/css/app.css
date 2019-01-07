@@ -4705,6 +4705,7 @@ input[type=button].btn-block {
 
 .navbar-dark .navbar-brand {
   color: #fff;
+  background: #085b76 !important;
 }
 
 .navbar-dark .navbar-brand:hover,
@@ -6666,7 +6667,7 @@ button.bg-light:focus {
 }
 
 .bg-dark {
-  background-color: #343a40 !important;
+  background-color: #073b4c !important;
 }
 
 a.bg-dark:hover,

@@ -2,5 +2,13 @@
     background: #085b76 !important;
 }
 .second-color{
-    background: #073b4c;
+    background: black !important;
+}
+
+.third-color{
+    background: #073b4c !important;
+}
+
+.text-titulo{
+    color: red;
 }

@@ -1,109 +1,182 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+	<!-- CSRF Token -->
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Biblioteca UDC</title>
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-
-    <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/simple-sidebar.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ 'https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css' }}">
+	<title>Biblioteca UDC</title>
 
 
+
+	<!-- Fonts -->
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
+
+	<!-- Styles -->
+	<link href="{{ asset('css/app.css') }}" rel="stylesheet">
+	<link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
+	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
+	<link rel="stylesheet" href="{{ 'https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css' }}">
 
 </head>
-<body class="second-color">
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light navbar-laravel main-color">
-            <div class="container">
-                <a class="navbar-brand text-light" href="{{ url('/') }}">
-                    <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="110px">
+
+<body class="">
+	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow second-color">
+		<a class="navbar-brand text-center col-sm-3 col-md-2 mr-0" href="#"> <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="90px"></a>		@guest @else @auth @if(Auth::user()->tipo_usuario == 'Administrador')
+		<a class="nw-100 text-light" href="#">
+                  Prestar libro
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+		<a class="nw-100 text-light" href="#">
+                  Historial
+                </a>
+		<a class="nw-100 text-light" href="#">
+                  Administradores
+                </a> @else
+		<a class="nw-100 text-light" href="#">
+                  Prestamos activos
+                </a>
+		<a class="nw-100 text-light" href="#">
+                  Mis prestamos
+                </a>
+		<a class="nw-100 text-light" href="#">
+                  Alumnos | Docentes
+                </a> @endif @endauth
+		<ul class="navbar-nav px-3">
+			<li class="nav-item text-nowrap">
+				<span class="navbar-text text-light">
+                                Hola {{ Auth::user()->nombres }} <span class="caret"></span> |
+				<a class="dnav-link text-light" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                document.getElementById('logout-form').submit();">
+                                {{ __('Logout') }}
+                            </a>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-                        @auth
-                            @if(Auth::user()->tipo_usuario == 'Administrador')
-                                <li class="nav-item active">
-                                    <a class="nav-link text-light" href="{{ route('admin') }}">Panel de control</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" href="#">Prestar libro</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" href="#">Historial</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" href="#">Pendientes</a>
-                                </li>
-                            @else
-                                 <li class="nav-item">
-                                    <a class="nav-link text-light" href="#">Mis prestamos</a>
-                                </li>
-                                 <li class="nav-item">
-                                    <a class="nav-link text-light" href="#">Consultar libros</a>
-                                </li>
-                            @endif
-                        @endauth
-                    </ul>
+				<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+					@csrf
+				</form>
+				</span>
+			</li>
 
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
-                        @guest
+			@endguest
+		</ul>
+	</nav>
+	@guest
+	<main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4">
+		<br>
+		<br>
+		<br> @yield('content')
+	</main>
+	@else @auth @if(Auth::user()->tipo_usuario == 'Administrador')
+	<div class="container-fluid">
+		<div class="row">
+			<nav class="col-md-2 d-none d-md-block sidebar third-color">
+				<div class="sidebar-sticky">
+					<ul class="nav flex-column">
 
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->nombres }} <span class="caret"></span>
-                                </a>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('home') ? 'active text-light' : '' }}" href="{{ route('home') }}">
+								<span data-feather="home"></span>
+								Inicio 
+							</a>
+						</li>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('admin') || request()->is('admin/nuevo') || request()->is('admin/edit/*') ? 'active text-light' : '' }}"
+							 	href="{{ route('admin.index')}} ">
+								<span data-feather="file"></span>
+								Administradores
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('docente') || request()->is('docente/nuevo') || request()->is('docente/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('docente.index')}} ">
+								<span data-feather="file"></span>
+								Docentes
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('alumno') || request()->is('alumno/nuevo') || request()->is('alumno/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('alumno.index')}} ">
+								<span data-feather="file"></span>
+								Alumnos
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('autor') || request()->is('autor/nuevo') || request()->is('autor/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('autor.index')}} ">
+								<span data-feather="file"></span>
+								Autores
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('editorial') || request()->is('editorial/nuevo') || request()->is('editorial/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('editorial.index')}} ">
+								<span data-feather="file"></span>
+								Editoriales
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('categoria') || request()->is('categoria/nuevo') || request()->is('categoria/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('categoria.index')}} ">
+								<span data-feather="file"></span>
+								Categorias
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('libro') || request()->is('libro/nuevo') || request()->is('libro/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('libro.index')}} ">
+								<span data-feather="file"></span>
+								Libros
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('ubicacion') || request()->is('ubicacion/nuevo') || request()->is('ubicacion/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('ubicacion.index')}} ">
+								<span data-feather="file"></span>
+								Ubicaciones
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ request()->is('ejemplar') || request()->is('ejemplar/nuevo') || request()->is('ejemplar/edit/*') ? 'active text-light' : '' }}"
+								href="{{ route('ejemplar.index')}} ">
+								<span data-feather="file"></span>
+								Ejemplares
+							</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</div>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
-            </div>
-        </nav>
+		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+			<br>
+			<br> @yield('content')
+		</main>
+		@endif @endauth @endguest
 
-        <main class="py-4">
-            @yield('content')
-        </main>
-    </div>
+		<!-- Scripts -->
+		<script src="{{ asset('js/app.js') }}"></script>
+		<script src="{{ asset('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js') }}"></script>
+		<script src="{{ asset('https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js') }}"></script>
 
-    <script src="{{ asset('https://code.jquery.com/jquery-3.3.1.js') }}"></script>
-    <script src="{{ asset('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js') }}"></script>
-     <!-- Menu Toggle Script -->
-    <script >
-        $("#wrapper").toggleClass("toggled");
-    </script>
+		<!-- Icons -->
+		<script src="{{ asset('https://unpkg.com/feather-icons/dist/feather.min.js') }}"></script>
+
+		<script>
+			$(document).ready( function () {
+        $('#tabla').DataTable({
+          "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json"
+        }
+        });
+    } );
+		</script>
+		<script>
+			feather.replace();
+		</script>
 </body>
+
 </html>
