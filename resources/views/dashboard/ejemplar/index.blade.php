@@ -22,6 +22,7 @@
                             <th>Código</th>
                             <th>Titulo</th>
                             <th>Ubicacion</th>
+                            <th>Estado</th>
                             <th>Editar</th>
                         </tr>
                     </thead>
@@ -31,10 +32,11 @@
                             <td>{!!$row->codigo!!}</td>
                             <td>{!!$row->libro->titulo!!}</td>
                             <td>{!!$row->ubicacion->nombre!!}</td>
+                            <td>{!! $row->estado ? 'Prestado' : 'Disponible' !!}</td>
                             <td class="text-center">
-                            <a class="" href="{{ route('ejemplar.edit', ['id' => $row->id]) }}">
-                            Editar
-                        </button>
+                                @if (!$row->estado)
+                                <a class="" href="{{ route('ejemplar.edit', ['id' => $row->id]) }}">Editar</a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

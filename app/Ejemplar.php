@@ -9,7 +9,7 @@ class Ejemplar extends Model
     protected $table='ejemplar';
 
     protected $fillable = [
-       'codigo', 'ubicacion_id','libro_id'
+       'codigo', 'ubicacion_id','libro_id', 'estado'
     ];
     public function ubicacion()
     {

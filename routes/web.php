@@ -86,4 +86,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
      Route::get('ejemplar/edit/{id}', 'EjemplarController@edit')->name('ejemplar.edit');
      Route::put('ejemplar/update/{id}', 'EjemplarController@update')->name('ejemplar.update');
      Route::post('ejemplar/file', 'EjemplarController@file')->name('ejemplar.file');
+
+     Route::get('prestamo', 'PrestamoController@index')->name('prestamo');
+     Route::get('prestamo/nuevo', 'PrestamoController@create')->name('prestamo.nuevo');
+     Route::get('prestamo/edit/{id}', 'PrestamoController@edit')->name('prestamo.edit');
+     Route::post('prestamo/store', 'PrestamoController@store')->name('prestamo.store');
 });

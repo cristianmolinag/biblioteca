@@ -25,26 +25,30 @@
 </head>
 
 <body class="">
-	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow second-color">
-		<a class="navbar-brand text-center col-sm-3 col-md-2 mr-0" href="#"> <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="90px"></a>		@guest @else @auth @if(Auth::user()->tipo_usuario == 'Administrador')
-		<a class="nw-100 text-light" href="#">
-                  Prestar libro
-                </a>
-		<a class="nw-100 text-light" href="#">
-                  Historial
-                </a>
-		<a class="nw-100 text-light" href="#">
-                  Administradores
-                </a> @else
-		<a class="nw-100 text-light" href="#">
-                  Prestamos activos
-                </a>
-		<a class="nw-100 text-light" href="#">
-                  Mis prestamos
-                </a>
-		<a class="nw-100 text-light" href="#">
-                  Alumnos | Docentes
-                </a> @endif @endauth
+	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow main-color">
+		<a class="navbar-brand text-center col-sm-3 col-md-2 mr-0" href="{{ route('home') }}"> <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="90px"></a>		
+		@guest 
+		@else 
+		@auth 
+		@if(Auth::user()->tipo_usuario == 'Administrador')
+			<a class="nw-100 text-light" href="{{ route('prestamo') }}">
+				Prestar libro
+			</a>
+			<a class="nw-100 text-light" href="#">
+				Historial
+			</a>
+			<a class="nw-100 text-light" href="#">
+				Devolver libro
+			</a>
+		@else
+			<a class="nw-100 text-light" href="#">
+				Prestamos activos
+			</a>
+			<a class="nw-100 text-light" href="#">
+				Mis prestamos
+			</a>
+		@endif 
+		@endauth
 		<ul class="navbar-nav px-3">
 			<li class="nav-item text-nowrap">
 				<span class="navbar-text text-light">
