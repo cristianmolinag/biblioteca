@@ -19,6 +19,12 @@ Auth::routes(['register' => false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('prestamo/mis_prestamos', 'PrestamoController@historial')->name('prestamo.porUsuario');
+    Route::get('prestamo/detalle/{id}', 'PrestamoController@show')->name('prestamo.detalle');
+    Route::get('prestamo/mis_prestamos_activos', 'PrestamoController@index')->name('prestamo.activos');
+});
+
 Route::middleware(['auth', 'admin'])->group(function () {
 
     //Admin
@@ -89,6 +95,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
      Route::get('prestamo', 'PrestamoController@index')->name('prestamo');
      Route::get('prestamo/nuevo', 'PrestamoController@create')->name('prestamo.nuevo');
-     Route::get('prestamo/edit/{id}', 'PrestamoController@edit')->name('prestamo.edit');
+     Route::put('prestamo/update/{id}', 'PrestamoController@update')->name('prestamo.update');
      Route::post('prestamo/store', 'PrestamoController@store')->name('prestamo.store');
-});
+     Route::get('prestamo/show/{id}', 'PrestamoController@show')->name('prestamo.show');
+     Route::get('prestamo/historial', 'PrestamoController@historial')->name('prestamo.historial');
+    });
+    

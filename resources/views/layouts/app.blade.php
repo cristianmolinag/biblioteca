@@ -10,8 +10,6 @@
 
 	<title>Biblioteca UDC</title>
 
-
-
 	<!-- Fonts -->
 	<link rel="dns-prefetch" href="//fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
@@ -34,17 +32,14 @@
 			<a class="nw-100 text-light" href="{{ route('prestamo') }}">
 				Prestar libro
 			</a>
-			<a class="nw-100 text-light" href="#">
+			<a class="nw-100 text-light" href="{{ route('prestamo.historial') }}">
 				Historial
 			</a>
-			<a class="nw-100 text-light" href="#">
-				Devolver libro
-			</a>
 		@else
-			<a class="nw-100 text-light" href="#">
+			<a class="nw-100 text-light" href="{{ route('prestamo.activos') }}">
 				Prestamos activos
 			</a>
-			<a class="nw-100 text-light" href="#">
+			<a class="nw-100 text-light" href="{{ route('prestamo.porUsuario') }}">
 				Mis prestamos
 			</a>
 		@endif 
@@ -73,7 +68,9 @@
 		<br>
 		<br> @yield('content')
 	</main>
-	@else @auth @if(Auth::user()->tipo_usuario == 'Administrador')
+	@else 
+	@auth 
+	@if(Auth::user()->tipo_usuario == 'Administrador')
 	<div class="container-fluid">
 		<div class="row">
 			<nav class="col-md-2 d-none d-md-block sidebar third-color">
@@ -159,7 +156,15 @@
 			<br>
 			<br> @yield('content')
 		</main>
-		@endif @endauth @endguest
+		@else
+		<main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4">
+			<br>
+			<br>
+			<br> @yield('content')
+		</main>
+		@endif 
+		@endauth 
+		@endguest
 
 		<!-- Scripts -->
 		<script src="{{ asset('js/app.js') }}"></script>

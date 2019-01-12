@@ -3,18 +3,32 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
-                <div class="card-header">Dashboard</div>
-
+                <div class="card-header">Bienvenido</div>
                 <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+                    @if(!empty($alerta))
+                        <div class="alert alert-danger"> 
+                        <h5>Atención:</h5>
+                        Los siguientes prestamos superaron la fecha máxima de entrega:
+                        </div>
+                        @foreach ($alerta as $item)
+                        <div class="alert alert-danger">
+                            <strong>Titulo: </strong> {!! $item->ejemplar->libro->titulo !!} **
+                            <strong>Fecha prestamo: </strong> {!! $item->fecha_prestamo !!} **
+                            <strong>Fecha Entrega Max: </strong> {!! $item->fecha_devolucion_max !!} **
+                            <strong>Dias de mora: </strong>{!! (strtotime(date("Y-m-d")) - strtotime($item->fecha_devolucion_max))/3600/24 !!}
+                        </div>
+                        @endforeach
+                        <hr>   
+                    @else
+                        Inicio de sesión exitoso!.
+                    @endif
                 </div>
             </div>
         </div>
