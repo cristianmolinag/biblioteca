@@ -19,7 +19,7 @@
                 <table class="table table-striped table-bordered" style="width:100%" id="tabla">
                     <thead>
                         <tr>
-                            < <th>Nombres</th>
+                            <th>Nombres</th>
                             <th>Apellidos</th>
                             <th>Documento</th>
                             <th>Correo</th>

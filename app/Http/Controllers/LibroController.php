@@ -7,6 +7,7 @@ use Biblioteca\Libro;
 use Biblioteca\Autor;
 use Biblioteca\Categoria;
 use Biblioteca\Editorial;
+use DB;
 
 class LibroController extends Controller
 {
@@ -19,9 +20,9 @@ class LibroController extends Controller
     public function create()
     {
         $datos = array(
-            "autores" => Autor::pluck('nombres','id'),
-            "categorias" => Categoria::pluck('nombre', 'id'),
-            "editoriales" => Editorial::pluck('nombre', 'id')
+            "autores" => DB::table('autor AS a')->select('a.id AS autor_id', 'a.nombres', 'a.apellidos')->get(),
+            "categorias" => DB::table('categoria AS c')->select('c.id AS categoria_id', 'c.nombre')->get(),
+            "editoriales" => DB::table('editorial AS e')->select('e.id AS editorial_id', 'e.nombre')->get()
         );
         return view('dashboard.libro.nuevo', compact('datos'));
     }
@@ -54,12 +55,11 @@ class LibroController extends Controller
 
     public function edit($id){
         $data = Libro::find($id);
-
         $datos = array(
             "libro" => $data,
-            "autores" => Autor::pluck('nombres','id'),
-            "categorias" => Categoria::pluck('nombre', 'id'),
-            "editoriales" => Editorial::pluck('nombre', 'id')
+            "autores" => DB::table('autor AS a')->select('a.id AS autor_id', 'a.nombres', 'a.apellidos')->get(),
+            "categorias" => DB::table('categoria AS c')->select('c.id AS categoria_id', 'c.nombre')->get(),
+            "editoriales" => DB::table('editorial AS e')->select('e.id AS editorial_id', 'e.nombre')->get()
         );
         return view('dashboard.libro.editar', compact('datos'));
     }
@@ -75,6 +75,7 @@ class LibroController extends Controller
             'editorial_id' => 'required|numeric',
             'categoria_id' => 'required|numeric',
         ]);
+        
         $data = Libro::find($id);
         if($request['isbn'] !== $data->isbn)
             $data->isbn = $request['isbn'];

@@ -33,9 +33,20 @@
                     </div>
                     <div class="col form-group">
                         <label for="ubicacion_id">Ubicacion: </label>
-                        {!! Form::select('ubicacion_id', $datos['ubicaciones'], old('ubicacion_id'), 
-                            ['placeholder' => 'Seleccione una opción', 'class' => 'form-control '. ($errors->has('ubicacion_id') ? ' is-invalid' : '') ]) 
-                        !!}
+                        <input 
+                        class="form-control {{ $errors->has('ubicacion_id') ? ' is-invalid' : '' }}" 
+                        value="{{ old('ubicacion_id') }}" 
+                        id="ubicacion_id"
+                        name="ubicacion_id"
+                        placeholder="Ingrese la ubicación" 
+                        list="ubicaciones"
+                        autocomplete="off"
+                        required autofocus>
+                        <datalist id="ubicaciones" class="">
+                            @foreach ($datos['ubicaciones'] as $row)
+                                <option value="{{ $row->ubicacion_id }}">{{ $row->nombre }}</option>
+                            @endforeach
+                        </datalist>
                         @if ($errors->has('ubicacion_id'))
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('ubicacion_id') }}</strong>
@@ -46,9 +57,23 @@
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="libro_id">Libro: </label>
-                        {!! Form::select('libro_id', $datos['libros'], old('libro_id'), 
+                        {{-- {!! Form::select('libro_id', $datos['libros'], old('libro_id'), 
                             ['placeholder' => 'Seleccione una opción', 'class' => 'form-control '. ($errors->has('libro_id') ? ' is-invalid' : '') ]) 
-                        !!}
+                        !!} --}}
+                        <input 
+                        class="form-control {{ $errors->has('libro_id') ? ' is-invalid' : '' }}" 
+                        value="{{ old('libro_id') }}" 
+                        id="libro_id"
+                        name="libro_id"
+                        placeholder="Ingrese el libro" 
+                        list="libros"
+                        autocomplete="off"
+                        required autofocus>
+                        <datalist id="libros" class="">
+                            @foreach ($datos['libros'] as $row)
+                                <option value="{{ $row->libro_id }}">{{ $row->titulo }}</option>
+                            @endforeach
+                        </datalist>
                         @if ($errors->has('libro_id'))
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('libro_id') }}</strong>

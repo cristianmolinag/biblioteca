@@ -9,7 +9,7 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 
 	<title>Biblioteca UDC</title>
-
+	<link rel="shortcut icon" href="http://www.universitariadecolombia.edu.co//assets/images/favicon-81x81.png" type="image/x-icon">
 	<!-- Fonts -->
 	<link rel="dns-prefetch" href="//fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
@@ -21,8 +21,7 @@
 	<link rel="stylesheet" href="{{ 'https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css' }}">
 
 </head>
-
-<body class="">
+	<body class="" style="background: linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.2)), url('/imagenes/sede1-biblioteca.jpg');">
 	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow main-color">
 		<a class="navbar-brand text-center col-sm-3 col-md-2 mr-0" href="{{ route('home') }}"> <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="90px"></a>		
 		@guest 
@@ -154,13 +153,23 @@
 
 		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
 			<br>
-			<br> @yield('content')
+			<br> 
+			<div class="card">
+				<br>
+				@yield('content')
+				<br>
+			</div>
 		</main>
 		@else
 		<main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4">
 			<br>
 			<br>
-			<br> @yield('content')
+			<br>
+			<div class="card">
+				<br>
+				@yield('content')
+				<br>
+			</div>
 		</main>
 		@endif 
 		@endauth 

@@ -7,6 +7,7 @@ use Biblioteca\Prestamo;
 use Biblioteca\User;
 use Biblioteca\Ejemplar;
 use Auth;
+use Biblioteca\Ubicacion;
 
 class PrestamoController extends Controller
 {
@@ -23,9 +24,10 @@ class PrestamoController extends Controller
 
     public function create(Request $request)
     {
+        $baja = Ubicacion::where('nombre', 'Baja')->first();
         $datos = array(
             "usuarios" => User::where('tipo_usuario', '!=', 'Administrador')->get(),
-            "ejemplares" => Ejemplar::where('estado', 0)->with('libro')->get()
+            "ejemplares" => Ejemplar::where('estado', 0)->where('ubicacion_id','<>', $baja->id)->with('libro')->get()    
         );
         return view('prestamo.nuevo', compact('datos'));
     }

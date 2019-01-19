@@ -81,9 +81,20 @@
                 <div class="row">
                     <div class="col form-group">
                         <label for="autor_id">Autor: </label>
-                        {!! Form::select('autor_id', $datos['autores'], old('autor_id', $datos['libro']->autor_id), 
-                            ['placeholder' => 'Seleccione una opción', 'class' => 'form-control '. ($errors->has('autor_id') ? ' is-invalid' : '') ]) 
-                        !!}
+                        <input 
+                            class="form-control {{ $errors->has('autor_id') ? ' is-invalid' : '' }}" 
+                            value="{{ old('autor_id', $datos['libro']->autor_id) }}" 
+                            id="autor_id"
+                            name="autor_id"
+                            placeholder="Ingrese el autor" 
+                            list="autores"
+                            autocomplete="off"
+                            required autofocus>
+                            <datalist id="autores" class="">
+                                @foreach ($datos['autores'] as $autor)
+                                    <option value="{{ $autor->autor_id }}">{{ $autor->apellidos }} {{ $autor->nombres }}</option>
+                                @endforeach
+                            </datalist>
                         @if ($errors->has('autor_id'))
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('autor_id') }}</strong>
@@ -92,9 +103,20 @@
                     </div>
                         <div class="col form-group">
                         <label for="editorial_id">Editorial: </label>
-                        {!! Form::select('editorial_id', $datos['editoriales'], old('editorial_id', $datos['libro']->editorial_id), 
-                            ['placeholder' => 'Seleccione una opción', 'class' => 'form-control '. ($errors->has('editorial_id') ? ' is-invalid' : '') ]) 
-                        !!}
+                        <input 
+                            class="form-control {{ $errors->has('editorial_id') ? ' is-invalid' : '' }}" 
+                            value="{{ old('editorial_id', $datos['libro']->editorial_id) }}" 
+                            id="editorial_id"
+                            name="editorial_id"
+                            placeholder="Ingrese la editorial" 
+                            list="editoriales"
+                            autocomplete="off"
+                            required autofocus>
+                            <datalist id="editoriales" class="">
+                                @foreach ($datos['editoriales'] as $editorial)
+                                    <option value="{{ $editorial->editorial_id }}">{{ $editorial->nombre }}</option>
+                                @endforeach
+                            </datalist>
                         @if ($errors->has('editorial_id'))
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('editorial_id') }}</strong>
@@ -105,9 +127,20 @@
                 <div class="row">
                     <div class="col-md-6 form-group">
                         <label for="categoria_id">Categoría: </label>
-                        {!! Form::select('categoria_id', $datos['categorias'], old('categoria_id', $datos['libro']->categoria_id), 
-                            ['placeholder' => 'Seleccione una opción', 'class' => 'form-control '. ($errors->has('categoria_id') ? ' is-invalid' : '') ]) 
-                        !!}
+                        <input 
+                        class="form-control {{ $errors->has('categoria_id') ? ' is-invalid' : '' }}" 
+                        value="{{ old('categoria_id', $datos['libro']->categoria_id) }}" 
+                        id="categoria_id"
+                        name="categoria_id"
+                        placeholder="Ingrese la categoría" 
+                        list="categorias"
+                        autocomplete="off"
+                        required autofocus>
+                        <datalist id="categorias" class="">
+                            @foreach ($datos['categorias'] as $categoria)
+                                <option value="{{ $categoria->categoria_id }}">{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </datalist>
                         @if ($errors->has('categoria_id'))
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('categoria_id') }}</strong>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Biblioteca\Ejemplar;
 use Biblioteca\Ubicacion;
 use Biblioteca\Libro;
+use DB;
 
 class EjemplarController extends Controller
 {
@@ -18,8 +19,8 @@ class EjemplarController extends Controller
     public function create()
     {
         $datos = array(
-            "ubicaciones" => Ubicacion::pluck('nombre','id'),
-            "libros" => Libro::pluck('titulo', 'id')
+            "ubicaciones" => DB::table('ubicacion AS u')->select('u.id AS ubicacion_id', 'u.nombre')->get(),
+            "libros" => DB::table('libro AS l')->select('l.id AS libro_id', 'l.titulo')->get()
         );
         return view('dashboard.ejemplar.nuevo', compact('datos'));
     }
@@ -47,8 +48,8 @@ class EjemplarController extends Controller
 
         $datos = array(
             "ejemplar" => $data,
-            "ubicaciones" => Ubicacion::pluck('nombre','id'),
-            "libros" => Libro::pluck('titulo', 'id')
+            "ubicaciones" => DB::table('ubicacion AS u')->select('u.id AS ubicacion_id', 'u.nombre')->get(),
+            "libros" => DB::table('libro AS l')->select('l.id AS libro_id', 'l.titulo')->get()
         );
         return view('dashboard.ejemplar.editar', compact('datos'));
     }
