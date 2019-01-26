@@ -41,7 +41,10 @@
 			<a class="nw-100 text-light" href="{{ route('prestamo.porUsuario') }}">
 				Mis prestamos
 			</a>
-		@endif 
+			@endif 
+			<a class="nw-100 text-light" href="{{ route('usuario.perfil') }}">
+				Perfil
+			</a>
 		@endauth
 		<ul class="navbar-nav px-3">
 			<li class="nav-item text-nowrap">

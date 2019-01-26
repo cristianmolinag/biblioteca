@@ -23,6 +23,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('prestamo/mis_prestamos', 'PrestamoController@historial')->name('prestamo.porUsuario');
     Route::get('prestamo/detalle/{id}', 'PrestamoController@show')->name('prestamo.detalle');
     Route::get('prestamo/mis_prestamos_activos', 'PrestamoController@index')->name('prestamo.activos');
+    Route::get('usuario/perfil', 'UsuarioController@index')->name('usuario.perfil');
+    Route::put('usuario/update/{id}', 'UsuarioController@update')->name('usuario.update');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
