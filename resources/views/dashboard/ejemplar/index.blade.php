@@ -10,7 +10,7 @@
                 </div>
             @endif
             <h5 class="text-titulo">Listado de Ejemplares</h5>
-            <div class="form-group">
+            <div class="form-group" style=''>
                 <a class="btn btn-success text-light float-md-right" href="{{ route('ejemplar.nuevo') }}">
                     Nuevo registro
                 </a>
@@ -32,9 +32,9 @@
                             <td>{!!$row->codigo!!}</td>
                             <td>{!!$row->libro->titulo!!}</td>
                             <td>{!!$row->ubicacion->nombre!!}</td>
-                            <td>{!! $row->estado ? 'Prestado' : 'Disponible' !!}</td>
+                            <td>{!! $row->estado !!}</td>
                             <td class="text-center">
-                                @if (!$row->estado)
+                                @if ($row->estado == 'Disponible')
                                 <a class="" href="{{ route('ejemplar.edit', ['id' => $row->id]) }}">Editar</a>
                                 @endif
                             </td>

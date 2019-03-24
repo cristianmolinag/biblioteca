@@ -65,7 +65,6 @@ class AdminController extends Controller
         ]);
 
         $usuario = User::find($id);
-        return $usuario;
         $usuario->nombres = $request['nombres'];
         $usuario->apellidos = $request['apellidos'];
         if($usuario->documento !== $request['documento'])

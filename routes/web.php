@@ -1,16 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
- */
-
 Route::get('/', function () {
     return redirect()->route('home');
 });
@@ -101,5 +90,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
      Route::post('prestamo/store', 'PrestamoController@store')->name('prestamo.store');
      Route::get('prestamo/show/{id}', 'PrestamoController@show')->name('prestamo.show');
      Route::get('prestamo/historial', 'PrestamoController@historial')->name('prestamo.historial');
-    });
+});
+
+// Rutas de la apk
+
+Route::group(['prefix' => 'apk'], function() {
+    Route::post('login', 'ApkController@login');
+    Route::post('busqueda', 'EjemplarController@busqueda');
+});
     

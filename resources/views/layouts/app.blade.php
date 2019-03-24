@@ -19,6 +19,7 @@
 	<link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
 	<link rel="stylesheet" href="{{ 'https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css' }}">
+	<link rel="stylesheet" href="{{ 'https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css' }}">
 
 </head>
 	<body class="" style="background: linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.2)), url('/imagenes/sede1-biblioteca.jpg');">
@@ -159,7 +160,9 @@
 			<br> 
 			<div class="card">
 				<br>
+				<div style="margin-top:20px; margin-bottom:20px;">
 				@yield('content')
+				</div>
 				<br>
 			</div>
 		</main>
@@ -182,6 +185,9 @@
 		<script src="{{ asset('js/app.js') }}"></script>
 		<script src="{{ asset('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js') }}"></script>
 		<script src="{{ asset('https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js') }}"></script>
+		<script src="{{ asset('https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js') }}"></script>
+		<script src="{{ asset('https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js') }}"></script>
+		<script src="{{ asset('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js') }}"></script>
 
 		<!-- Icons -->
 		<script src="{{ asset('https://unpkg.com/feather-icons/dist/feather.min.js') }}"></script>
@@ -189,6 +195,11 @@
 		<script>
 			$(document).ready( function () {
         $('#tabla').DataTable({
+					dom: 'Bfrtip',
+					buttons: [
+            'copyHtml5',
+            'excelHtml5'
+        ],
           "language": {
             "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json"
         }

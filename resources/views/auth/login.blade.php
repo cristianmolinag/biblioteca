@@ -63,6 +63,7 @@
                                         {{ __('Forgot Your Password?') }}
                                     </button>
                                 @endif
+                                <a href="/apk/biblioteca.apk">Descargar APK</a>
                             </div>
                         </div>
                     </form>
