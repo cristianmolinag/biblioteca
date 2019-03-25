@@ -11,7 +11,7 @@
                     {{ session()->get('message') }}
                 </div>
             @endif
-            <h5 class="text-titulo">Detalle del prestamo # {{ $data->prestamo->id }}</h5>
+            <h5 class="text-titulo">Detalle del prestamo # {{ $data->id }}</h5>
             <hr>
             <div class="card">
                 <div class="card-header">
@@ -22,42 +22,42 @@
                         <div class="col-md-4 text-center">
                             <div>
                                 <h5>Fecha préstamo: </h5>
-                                <p class="text-muted">{{ $data->prestamo->fecha_prestamo }}</p>
+                                <p class="text-muted">{{ $data->fecha_prestamo }}</p>
                             </div>
                         </div>
                         <div class="col-md-4 text-center">
                             <div>
                                 <h5>Fecha devolución máx: </h5>
-                                @if (strtotime(date("Y-m-d H:i:s")) < strtotime($data->prestamo->fecha_devolucion_max))
-                                <p class="text-muted">{{ $data->prestamo->fecha_devolucion_max }}</p>
+                                @if (strtotime(date("Y-m-d H:i:s")) < strtotime($data->fecha_devolucion_max))
+                                <p class="text-muted">{{ $data->fecha_devolucion_max }}</p>
                                 @else
-                                <p class="text-danger">{{ $data->prestamo->fecha_devolucion_max }}</p>
+                                <p class="text-danger">{{ $data->fecha_devolucion_max }}</p>
                                 @endif
                             </div>
                         </div>
                         <div class="col-md-4 text-center">
                             <div>
                                 <h5>Fecha devolución: </h5>
-                                <!-- @if ($data->prestamo->fecha_devolucion) -->
-                                <p class="text-muted">{{ $data->prestamo->fecha_devolucion }}</p>
-                                    <!-- @else -->
-                                <!-- <p class="text-muted">-</p> -->
-                                <!-- @endif -->
+                                @if ($data->fecha_devolucion)
+                                <p class="text-muted">{{ $data->fecha_devolucion }}</p>
+                                    @else
+                                <p class="text-muted">-</p>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-4 text-center">
                             <div>
                                 <h5>Prestado por: </h5>
-                                <p class="text-muted">{{ $data->prestamo->prestador->nombres }} {{ $data->prestamo->prestador->apellidos }}</p>
+                                <p class="text-muted">{{ $data->prestador->nombres }} {{ $data->prestador->apellidos }}</p>
                             </div>
                         </div>
                         <div class="col-md-4 text-center">
                             <div>
                                 <h5>Recibido por: </h5>
-                                <!-- @if ($data->receptor) -->
-                                    <p class="text-muted">{{ $data->prestamo->receptor->nombres }} {{ $data->prestamo->receptor->apellidos }}</p>
-                                <!-- @else -->
-                                    <!-- <p class="text-muted">-</p> -->
+                                @if ($data->receptor)
+                                    <p class="text-muted">{{ $data->receptor->nombres }} {{ $data->receptor->apellidos }}</p>
+                                @else
+                                    <p class="text-muted">-</p>
                                 @endif
                             </div>
                         </div>

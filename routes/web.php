@@ -14,6 +14,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('prestamo/mis_prestamos_activos', 'PrestamoController@index')->name('prestamo.activos');
     Route::get('usuario/perfil', 'UsuarioController@index')->name('usuario.perfil');
     Route::put('usuario/update/{id}', 'UsuarioController@update')->name('usuario.update');
+    
+    // Reserva
+    Route::get('reserva', 'ReservaController@index')->name('reserva.index');
+    Route::get('reserva/nuevo', 'ReservaController@create')->name('reserva.nuevo');
+    Route::post('reserva/store', 'ReservaController@store')->name('reserva.store');
+    Route::put('reserva/update/{id}', 'ReservaController@update')->name('reserva.update');
+
+    // Prestamo
+    Route::get('prestamo/show/{id}', 'PrestamoController@show')->name('prestamo.show');
+
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -84,11 +94,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
      Route::put('ejemplar/update/{id}', 'EjemplarController@update')->name('ejemplar.update');
      Route::post('ejemplar/file', 'EjemplarController@file')->name('ejemplar.file');
 
+
+
+
+     // Prestamo
      Route::get('prestamo', 'PrestamoController@index')->name('prestamo');
      Route::get('prestamo/nuevo', 'PrestamoController@create')->name('prestamo.nuevo');
      Route::put('prestamo/update/{id}', 'PrestamoController@update')->name('prestamo.update');
      Route::post('prestamo/store', 'PrestamoController@store')->name('prestamo.store');
-     Route::get('prestamo/show/{id}', 'PrestamoController@show')->name('prestamo.show');
      Route::get('prestamo/historial', 'PrestamoController@historial')->name('prestamo.historial');
 });
 
@@ -98,4 +111,3 @@ Route::group(['prefix' => 'apk'], function() {
     Route::post('login', 'ApkController@login');
     Route::post('busqueda', 'EjemplarController@busqueda');
 });
-    

@@ -8,16 +8,19 @@ use Biblioteca\User;
 use Biblioteca\Ejemplar;
 use Auth;
 use Biblioteca\Ubicacion;
+use Biblioteca\Reserva;
 
 class PrestamoController extends Controller
 {
     public function index()
     {
-        if(Auth::user()->tipo_usuario == 'Administrador'){
-        $data = Prestamo::with('usuario', 'prestador', 'ejemplar')->where('fecha_devolucion','=', null)->get();
+        $usuario = Auth::user();
+        if($usuario->tipo_usuario == 'Administrador'){
+            $data = Reserva::with('prestamo', 'ejemplar', 'usuario', 'usuarioEstado')->where('estado', 'Prestado')->get();
         }
         else{
-            $data = Prestamo::with('usuario', 'prestador', 'ejemplar')->where('fecha_devolucion','=', null)->where('usuario_id', Auth::user()->id)->get();
+            $data = Reserva::with('prestamo', 'ejemplar', 'usuario', 'usuarioEstado')->where('estado', 'Prestado')->where('usuario_id', $usuario->id)->get();
+            // return $data;
         }
         return view('prestamo.index', compact('data'));
     }
@@ -32,76 +35,79 @@ class PrestamoController extends Controller
         return view('prestamo.nuevo', compact('datos'));
     }
 
-    public function store(Request $request)
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'documento' => 'required|string|max:17|exists:usuario',
+    //         'codigo' => 'required|string|max:13|exists:ejemplar',
+    //     ]);
+
+
+    //     $usuario = User::where('documento', $request->documento)->first();
+    //     $prestamos = Prestamo::where('usuario_id', $usuario->id)->get();
+
+    //     if($prestamos->count() < 3){
+    
+    //         $fecha_prestamo = date("Y-m-d H:i:s");
+    //         $fecha_devolucion_max = date ("Y-m-d H:i:s", strtotime ( '+3 day' , strtotime ( $fecha_prestamo )));
+    //         $ejemplar = Ejemplar::where('codigo', $request->codigo)->first();
+    
+    //         Prestamo::create([
+    //             'prestador_id' => Auth::user()->id,
+    //             'usuario_id' => $usuario->id,
+    //             'ejemplar_id' => $ejemplar->id,
+    //             'fecha_prestamo' => $fecha_prestamo,
+    //             'fecha_devolucion_max' => $fecha_devolucion_max
+    //         ]);
+
+    //         $ejemplar->estado = true;
+    //         $ejemplar->save();
+
+    //         return redirect()->route('prestamo')->with('message', 'Prestamo registrado con éxito!');          
+    //     }
+    //     else{
+    //         return redirect()->route('prestamo.nuevo')->with('error', 'El usuario '. $usuario->nombres .' '.$usuario->apellidos . ' tiene 3 prestamos pendientes por devolver');                         
+    //     }
+    // }
+
+    public function show($id)
     {
-        $request->validate([
-            'documento' => 'required|string|max:17|exists:usuario',
-            'codigo' => 'required|string|max:13|exists:ejemplar',
-        ]);
-
-
-        $usuario = User::where('documento', $request->documento)->first();
-        $prestamos = Prestamo::where('usuario_id', $usuario->id)->get();
-
-        if($prestamos->count() < 3){
-    
-            $fecha_prestamo = date("Y-m-d H:i:s");
-            $fecha_devolucion_max = date ("Y-m-d H:i:s", strtotime ( '+3 day' , strtotime ( $fecha_prestamo )));
-            $ejemplar = Ejemplar::where('codigo', $request->codigo)->first();
-    
-            Prestamo::create([
-                'prestador_id' => Auth::user()->id,
-                'usuario_id' => $usuario->id,
-                'ejemplar_id' => $ejemplar->id,
-                'fecha_prestamo' => $fecha_prestamo,
-                'fecha_devolucion_max' => $fecha_devolucion_max
-            ]);
-
-            $ejemplar->estado = true;
-            $ejemplar->save();
-
-            return redirect()->route('prestamo')->with('message', 'Prestamo registrado con éxito!');          
-        }
-        else{
-            return redirect()->route('prestamo.nuevo')->with('error', 'El usuario '. $usuario->nombres .' '.$usuario->apellidos . ' tiene 3 prestamos pendientes por devolver');                         
-        }
-    }
-
-    public function show($id){
-        if(Auth::user()->tipo_usuario == 'Administrador'){
-            $data = Prestamo::with('usuario', 'prestador', 'ejemplar', 'receptor')->find($id);
-        }
-        else{
-            $data = Prestamo::where('usuario_id', Auth::user()->id)->where('id',$id)->with('usuario', 'prestador', 'ejemplar', 'receptor')->first();
-        }
-
-        if($data){
+            $data = Reserva::with('prestamo', 'ejemplar', 'usuario', 'usuarioEstado')->find($id);
+            // return $data;
             return view('prestamo.detalle', compact('data'));
-        }
-        else{
-            return redirect('/home');
-        }
     }
 
-    public function historial(){
-        if(Auth::user()->tipo_usuario == 'Administrador'){
-            $data = Prestamo::with('usuario', 'prestador', 'ejemplar')->get();
+    public function historial()
+    {
+        $usuario = Auth::user();
+        if($usuario->tipo_usuario == 'Administrador'){
+            $data = Reserva::with('prestamo', 'ejemplar', 'usuario', 'usuarioEstado')->get();
+            return $data;
         }
         else{
-            $data = Prestamo::with('usuario', 'prestador', 'ejemplar')->where('usuario_id', Auth::user()->id)->get();
+            $data = Reserva::with('prestamo', 'ejemplar', 'usuario', 'usuarioEstado')->where('usuario_id', $usuario->id)->get();
+            return $data;
         }
         return view('prestamo.historial', compact('data'));
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
+        $receptor = Auth::user();
+        $reserva = Reserva::find($id);
+        $reserva->usuario_estado_id = $receptor->id;
+        $reserva->estado = 'Devuelto';
+        $reserva->save();
 
-        $data = Prestamo::find($id);
-        $data->fecha_devolucion = date("Y-m-d H:i:s");
-        $data->receptor_id = Auth::user()->id;
-        $data->save();
+        $ejemplar = Ejemplar::find($reserva->ejemplar_id);
 
-        $ejemplar = Ejemplar::find($data->id);
-        $ejemplar->estado = false;
+        $prestamo = Prestamo::where('reserva_id', $reserva->id)->first();
+
+        $prestamo->fecha_devolucion = date("Y-m-d H:i:s");
+        $prestamo->receptor_id = $receptor->id;
+        $prestamo->save();
+
+        $ejemplar->estado = 'Disponible';
         $ejemplar->save();
 
         return redirect()->route('prestamo')->with('message', 'Ejemplar devuelto con éxito!');  

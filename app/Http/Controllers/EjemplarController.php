@@ -32,7 +32,7 @@ class EjemplarController extends Controller
             'ubicacion_id' => 'required|numeric',
             'libro_id' => 'required|numeric',
         ]);
-            
+
         //return $request;
         Ejemplar::create([
             'codigo' => $request['codigo'],
@@ -41,7 +41,7 @@ class EjemplarController extends Controller
             'estado' => 'Disponible'
         ]);
 
-        return redirect()->route('ejemplar.index')->with('message', 'Registro insertado con éxito!');          
+        return redirect()->route('ejemplar.index')->with('message', 'Registro insertado con éxito!');
     }
 
     public function edit($id){
@@ -70,14 +70,14 @@ class EjemplarController extends Controller
         $data->libro_id = $request['libro_id'];
         $data->save();
 
-        return redirect()->route('ejemplar.index')->with('message', 'Registro editado con éxito!');  
+        return redirect()->route('ejemplar.index')->with('message', 'Registro editado con éxito!');
     }
 
     public function file(Request $request)
     {
         $path = $request->file('file')->getRealPath();
         $data = array_map('str_getcsv', file($path));
-        if (count($data) > 0) 
+        if (count($data) > 0)
         {
             foreach ($data as $row => $value) {
                 if(!Ejemplar::where('codigo','=',$value[0])->first())
@@ -85,8 +85,9 @@ class EjemplarController extends Controller
                     Ejemplar::create([
                         'codigo' => $value[0],
                         'ubicacion_id' => $value[1],
-                        'libro_id' => $value[2]
-                        ]);      
+                        'libro_id' => $value[2],
+                        'estado' => 'Disponible'
+                        ]);
                     }
                 }
             return redirect()->route('ejemplar.index')->with('message', 'Registros insertados con éxito!');

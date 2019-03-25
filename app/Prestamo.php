@@ -11,17 +11,11 @@ class Prestamo extends Model
     protected $fillable = [
         'prestador_id', // el bilbiotecario que presta
         'receptor_id', //  el bibliotecario que recibe
-        'usuario_id', //el usuario que solicita el préstamo
-        'ejemplar_id',
+        'reserva_id',
         'fecha_prestamo',
         'fecha_devolucion_max',
         'fecha_devolucion'
     ];
-
-    public function usuario()
-    {
-        return $this->belongsTo(User::class, 'usuario_id');
-    }
 
     public function prestador()
     {
@@ -32,8 +26,9 @@ class Prestamo extends Model
     {
         return $this->belongsTo(User::class, 'receptor_id');
     }
-    public function ejemplar()
+
+    public function reserva()
     {
-        return $this->belongsTo(Ejemplar::class)->with('libro', 'ubicacion');
+        return $this->belongsTo(User::class, 'reserva_id')->with('ejemplar', 'usuario');
     }
 }

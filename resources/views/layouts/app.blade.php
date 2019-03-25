@@ -24,25 +24,25 @@
 </head>
 	<body class="" style="background: linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.2)), url('/imagenes/sede1-biblioteca.jpg');">
 	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow main-color">
-		<a class="navbar-brand text-center col-sm-3 col-md-2 mr-0" href="{{ route('home') }}"> <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="90px"></a>		
-		@guest 
-		@else 
-		@auth 
-		@if(Auth::user()->tipo_usuario == 'Administrador')
-			<a class="nw-100 text-light" href="{{ route('prestamo') }}">
-				Prestar libro
-			</a>
-			<a class="nw-100 text-light" href="{{ route('prestamo.historial') }}">
-				Historial
-			</a>
+		<a class="navbar-brand text-center col-sm-3 col-md-2 mr-0" href="{{ route('home') }}"> <img src="/imagenes/udc-logo.png" alt="Logo UDC" width="90px"></a>
+		@guest
 		@else
+		@auth
+		<a class="nw-100 text-light" href="{{ route('reserva.index') }}">
+			Reservas
+		</a>
 			<a class="nw-100 text-light" href="{{ route('prestamo.activos') }}">
 				Prestamos activos
 			</a>
+		@if(Auth::user()->tipo_usuario == 'Administrador')
+			<a class="nw-100 text-light" href="{{ route('prestamo.historial') }}">
+				Historial prestamos
+			</a>
+		@else
 			<a class="nw-100 text-light" href="{{ route('prestamo.porUsuario') }}">
 				Mis prestamos
 			</a>
-			@endif 
+			@endif
 			<a class="nw-100 text-light" href="{{ route('usuario.perfil') }}">
 				Perfil
 			</a>
@@ -71,8 +71,8 @@
 		<br>
 		<br> @yield('content')
 	</main>
-	@else 
-	@auth 
+	@else
+	@auth
 	@if(Auth::user()->tipo_usuario == 'Administrador')
 	<div class="container-fluid">
 		<div class="row">
@@ -83,7 +83,7 @@
 						<li class="nav-item">
 							<a class="nav-link {{ request()->is('home') ? 'active text-light' : '' }}" href="{{ route('home') }}">
 								<span data-feather="home"></span>
-								Inicio 
+								Inicio
 							</a>
 						</li>
 
@@ -157,7 +157,7 @@
 
 		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
 			<br>
-			<br> 
+			<br>
 			<div class="card">
 				<br>
 				<div style="margin-top:20px; margin-bottom:20px;">
@@ -177,8 +177,8 @@
 				<br>
 			</div>
 		</main>
-		@endif 
-		@endauth 
+		@endif
+		@endauth
 		@endguest
 
 		<!-- Scripts -->

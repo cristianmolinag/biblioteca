@@ -16,12 +16,10 @@ class CrearTablaPrestamo extends Migration
         Schema::create('prestamo', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('prestador_id')->unsigned();
-            $table->integer('receptor_id')->nullable()->unsigned();
-            $table->integer('usuario_id')->unsigned();            
+            $table->integer('receptor_id')->nullable()->unsigned();    
             $table->integer('reserva_id')->unsigned();            
             $table->foreign('prestador_id')->references('id')->on('usuario');
             $table->foreign('receptor_id')->references('id')->on('usuario');
-            $table->foreign('usuario_id')->references('id')->on('usuario');
             $table->foreign('reserva_id')->references('id')->on('reserva');
             $table->date('fecha_prestamo');
             $table->date('fecha_devolucion_max');

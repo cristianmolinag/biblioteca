@@ -17,8 +17,8 @@ class CrearTablaEjemplar extends Migration
             $table->increments('id');
             $table->string('codigo')->unique();
             $table->integer('ubicacion_id')->unsigned();
-            $table->foreign('ubicacion_id')->references('id')->on('ubicacion');
             $table->integer('libro_id')->unsigned();
+            $table->foreign('ubicacion_id')->references('id')->on('ubicacion');
             $table->foreign('libro_id')->references('id')->on('libro');
             $table->enum('estado', ['Prestado', 'Reservado', 'Disponible']);
             $table->timestamps();
