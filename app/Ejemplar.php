@@ -17,6 +17,6 @@ class Ejemplar extends Model
     }
     public function libro()
     {
-        return $this->belongsTo(Libro::class);
+        return $this->belongsTo(Libro::class)->with('autor', 'editorial', 'categoria');
     }
 }
