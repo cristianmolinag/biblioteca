@@ -104,10 +104,3 @@ Route::middleware(['auth', 'admin'])->group(function () {
      Route::post('prestamo/store', 'PrestamoController@store')->name('prestamo.store');
      Route::get('prestamo/historial', 'PrestamoController@historial')->name('prestamo.historial');
 });
-
-// Rutas de la apk
-
-Route::group(['prefix' => 'apk'], function() {
-    Route::post('login', 'ApkController@login');
-    Route::post('busqueda', 'EjemplarController@busqueda');
-});

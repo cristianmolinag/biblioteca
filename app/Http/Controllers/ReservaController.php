@@ -78,7 +78,6 @@ class ReservaController extends Controller
             case 'Prestado':
 
                 $prestamos = Reserva::where('usuario_id', $usuario->id)->where('estado', 'Prestado')->get();
-                return $prestamos->count();
                 if ($prestamos->count() < 3) {
                     $fecha_prestamo = date("Y-m-d H:i:s");
                     $fecha_devolucion_max = date("Y-m-d H:i:s", strtotime('+3 day', strtotime($fecha_prestamo)));

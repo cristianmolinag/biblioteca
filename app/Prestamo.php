@@ -29,6 +29,6 @@ class Prestamo extends Model
 
     public function reserva()
     {
-        return $this->belongsTo(User::class, 'reserva_id')->with('ejemplar', 'usuario');
+        return $this->belongsTo(Reserva::class, 'reserva_id')->with('ejemplar', 'usuario');
     }
 }

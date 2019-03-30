@@ -24,12 +24,18 @@ Route::group(['prefix'=> 'auth'], function(){
         
         //Usuario
         Route::get('logout', 'AppController@logout');
-        Route::get('usuario', 'AppController@usuario');
+        Route::get('usuario', 'AppController@getUsuario');
 
         //Reservas
         Route::get('misReservas', 'AppController@getMisReservas');
 
         //Prestamos
+
+        Route::get('misPrestamos', 'AppController@getMisPrestamos');
+
+        Route::post('reservar', 'AppController@reservar');
+
+        Route::post('busqueda', 'AppController@busqueda');
         
 
     });
