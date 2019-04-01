@@ -39,6 +39,7 @@ class AdminController extends Controller
             'documento' => $request['documento'],
             'correo' => $request['correo'],
             'tipo_usuario' => 'Administrador',
+            'remember_token' => str_random(10),
             'password' => Hash::make($request['password'])
         ]);
 

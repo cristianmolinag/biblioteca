@@ -51,7 +51,7 @@ class ReservaController extends Controller
 
                 return redirect()->route('reserva.index')->with('message', 'Reserva registrada con éxito!');
             } else {
-                return redirect()->route('reserva.nuevo')->with('error', 'El usuario ' . $usuario->nombres . ' ' . $usuario->apellidos . ' tiene 3 prestamos pendientes por devolver');
+                return redirect()->route('reserva.nuevo')->with('error', 'No puede reservar el ejemplar, ya cuenta con 3 préstamos sin devolver');
             }
         }
     }

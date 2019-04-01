@@ -2,129 +2,164 @@
 
 namespace Biblioteca\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Biblioteca\User;
-use Biblioteca\Reserva;
-use Biblioteca\Prestamo;
 use Auth;
-use Carbon\Carbon;
+use Biblioteca\Ejemplar;
+use Biblioteca\Prestamo;
+use Biblioteca\Reserva;
+use Biblioteca\User;
+use Illuminate\Http\Request;
 
 class AppController extends Controller
 {
+
     public function login(Request $request)
     {
-        $request->validate([
-            'documento' => 'required|numeric|digits_between:8,10',
-            'password' => 'required|string',
-            'remember_me' => 'boolean',
-        ],
-        [
-            'documento.numeric' => 'Debe ingresar un documento válido'
-        ]);
-
         $credenciales = request(['documento', 'password']);
-        if (!Auth::attempt($credenciales)) {
+
+        if (!Auth::attempt($credenciales, true)) {
+            return response()->json(null, 401);
+        } else {
+            if (Auth::user()->tipo_usuario == "Administrador") {
+                Auth::logout();
+                return response()->json(null, 401);
+            }
             return response()->json([
-                'message' => 'Usuario incorrecto'], 401);
+                'token' => Auth::user()->remember_token, 200]);
         }
-
-        $usuario = $request->user();
-        $tokenResult = $usuario->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-
-        if ($request->remember_me) {
-            $token->expires_at = Carbon::now()->addWeeks(1);
-        }
-
-        $token->save();
-
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type'   => 'Bearer',
-            'expires_at'   => Carbon::parse(
-                $tokenResult->token->expires_at)
-                    ->toDateTimeString(),
-        ]);
     }
-
-    public function logout(Request $request)
-    {
-        $request->user()->token()->revoke();
-
-        return response()->json(['message' => 
-            'Successfully logged out']);
-    }
-
 
     public function getUsuario(Request $request)
     {
-        return response()->json($request->user());
+        $usuario = User::where('remember_token', $request->header('token'))->first();
+
+        if ($usuario) {
+            return response()->json([
+                'data' => $usuario, 200]);
+        } else {
+            return response()->json([null, 403]);
+        }
     }
 
-    public function getMisReservas(Request $request){
+    public function getMisReservas(Request $request)
+    {
+        $usuario = User::where('remember_token', $request->header('token'))->first();
 
-        $usuario = $request->user();
-
-        $misReservas = Reserva::with('usuario', 'usuarioEstado', 'ejemplar', 'prestamo')->where('usuario_id', $usuario->id)->get();
-        return response()->json($misReservas);
+        if ($usuario) {
+            $misReservas = Reserva::with('usuario', 'usuarioEstado', 'ejemplar', 'prestamo')->where('usuario_id', $usuario->id)->get();
+            return response()->json($misReservas);
+        } else {
+            return response()->json([null, 403]);
+        }
     }
 
-    public function getMisPrestamos(Request $request){
-        $usuario = $request->user();
-         $data = Prestamo::with('prestador', 'receptor', 'reserva')->whereHas( 'reserva', function($query) use($usuario) {
-            $query->where('usuario_id', $usuario->id);
-        })->get();
+    public function getMisPrestamos(Request $request)
+    {
+        $usuario = User::where('remember_token', $request->header('token'))->first();
+
+        if ($usuario) {
+            $data = Prestamo::with('prestador', 'receptor', 'reserva')->whereHas('reserva', function ($query) use ($usuario) {
+                $query->where('usuario_id', $usuario->id);
+            })->get();
+            return response()->json([$data, 200]);
+        } else {
+            return response()->json([null, 403]);
+        }
+
+    }
+
+    public function getMisPendientes(Request $request)
+    {
+        $usuario = User::where('remember_token', $request->header('token'))->first();
+
+        if ($usuario) {
+            //     $data = Prestamo::with('prestador', 'receptor', 'reserva')->whereHas('reserva', function ($query) use ($usuario) {
+            //         $query->where('usuario_id', $usuario->id);
+            //     })->where('fecha_devolucion_max', '<', date("Y-m-d H:i:s"))
+            //         ->get();
+            //     return response()->json($data);
+            $misPendientes = Reserva::with('ejemplar', 'prestamo')->where(function ($query) use ($usuario) {
+                $query->where('usuario_id', $usuario->id);
+            })
+                ->where(function ($query) use ($usuario) {
+                    $query->where('estado', 'reservado')
+                        ->orWhere('estado', 'prestado');
+                })->get();
+
+            return response()->json($misPendientes, 200);
+        } else {
+            return response()->json([null, 403]);
+        }
+
+    }
+
+    public function getEjemplares(Request $request)
+    {
+        $data = Ejemplar::with('ubicacion', 'libro')
+            ->where(function ($query) {
+                $query->whereHas('ubicacion', function ($query) {
+                    $query->where('nombre', '!=', 'Baja');
+                });
+            })
+            ->where(function ($query) use ($request) {
+                $query->whereHas('libro', function ($query) use ($request) {
+                    $query->where('titulo', 'like', "%{$request->value}%")
+                        ->orWhere('isbn', 'like', "%{$request->value}%")
+                        ->orWhereHas('autor', function ($query) use ($request) {
+                            $searchString = "%{$request->value}%";
+                            $query->whereRaw("(CONCAT(autor.nombres,' ',autor.apellidos) like ?)", [$searchString]);
+                        })->orWhereHas('editorial', function ($query) use ($request) {
+                        $query->where('nombre', 'like', "%{$request->value}%");
+                    });
+                })
+                    ->orWhere('codigo', 'like', "%{$request->value}%");
+            })->paginate(5);
+
         return response()->json($data);
     }
 
-    public function busqueda(Request $request){
+    public function reservar(Request $request)
+    {
+        $usuario = User::where('remember_token', $request->header('token'))->first();
 
-        $tipoFiltro = $request->tipoFiltro;
-        $filtro = $request->filtro;
+        if ($usuario) {
 
-        switch ($tipoFiltro) {
-            case "Titulo":
-                $ejemplares = DB::table('ejemplar as ej')
-                ->join('libro as l', 'l.id', '=', 'ej.libro_id')
-                ->join('autor as a', 'a.id', '=', 'l.autor_id')
-                ->join('editorial as ed', 'ed.id', '=', 'l.editorial_id')
-                ->join('ubicacion as u', 'u.id', '=', 'ej.ubicacion_id')
-                ->select('ej.codigo', 'l.titulo', 'u.nombre as ubicacion',DB::raw('CONCAT(a.nombres, " ", a.apellidos) AS autor'), 'ed.nombre as editorial', 'ej.estado' )
-                ->where('l.titulo', 'like', '%'.$filtro.'%')
-                ->where('u.nombre', '!=', 'Baja')
-                ->distinct('ej.id')
-                ->orderBy('ej.estado', 'asc')
-                ->get();
-                break;
-            case "Autor":
-            $ejemplares = DB::table('ejemplar as ej')
-                ->join('libro as l', 'l.id', '=', 'ej.libro_id')
-                ->join('autor as a', 'a.id', '=', 'l.autor_id')
-                ->join('editorial as ed', 'ed.id', '=', 'l.editorial_id')
-                ->join('ubicacion as u', 'u.id', '=', 'ej.ubicacion_id')
-                ->select('ej.codigo', 'l.titulo', 'u.nombre as ubicacion',DB::raw('CONCAT(a.nombres, " ", a.apellidos) AS autor'), 'ed.nombre as editorial', 'ej.estado' )
-                ->where('u.nombre', '<>', 'Baja')
-                ->where('a.nombres', 'like', '%'.$filtro.'%')
-                ->orWhere('a.apellidos', 'like', '%'.$filtro.'%')
-                ->distinct('ej.id')
-                ->orderBy('ej.estado', 'asc')
-                ->get();
-                break;
-            case "Editorial":
-                $ejemplares = DB::table('ejemplar as ej')
-                ->join('libro as l', 'l.id', '=', 'ej.libro_id')
-                ->join('autor as a', 'a.id', '=', 'l.autor_id')
-                ->join('editorial as ed', 'ed.id', '=', 'l.editorial_id')
-                ->join('ubicacion as u', 'u.id', '=', 'ej.ubicacion_id')
-                ->select('ej.codigo', 'l.titulo', 'u.nombre as ubicacion',DB::raw('CONCAT(a.nombres, " ", a.apellidos) AS autor'), 'ed.nombre as editorial', 'ej.estado' )
-                ->where('ed.nombre', 'like', '%'.$filtro.'%')
-                ->where('u.nombre', '!=', 'Baja')
-                ->distinct('ej.id')
-                ->orderBy('ej.estado', 'asc')
-                ->get();
-                break;
+            $misPendientes = Reserva::where(function ($query) use ($usuario) {
+                $query->where('usuario_id', $usuario->id);
+            })
+                ->where(function ($query) use ($usuario) {
+                    $query->where('estado', 'reservado')
+                        ->orWhere('estado', 'prestado');
+                })->get();
+
+            if (count($misPendientes) >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'No puede reservar el ejemplar. Tiene pendientes 3 préstamos o reservas',
+                ], 200);
+            } else {
+
+                $ejemplar = Ejemplar::Find($request->ejemplar_id);
+
+                Reserva::create([
+                    'usuario_id' => $usuario->id,
+                    'ejemplar_id' => $ejemplar->id,
+                    'usuario_estado_id' => $usuario->id,
+                    'estado' => 'Reservado',
+                ]);
+
+                $ejemplar->estado = 'Reservado';
+                $ejemplar->save();
+
+                return response()->json([
+                    'success' => true,
+                    'data' => null,
+                    'message' => 'reserva realizada con éxito, por favor acérquese a la biblioteca para la entrega del ejemplar',
+                ], 200);
+            }
+
+        } else {
+            return response()->json([null, 403]);
         }
-
-        Return $ejemplares;
     }
 }
