@@ -19,7 +19,7 @@ class Kernel extends HttpKernel
         \Biblioteca\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Biblioteca\Http\Middleware\TrustProxies::class,
-        \Biblioteca\Http\Middleware\Cors::class,
+        \Barryvdh\Cors\HandleCors::class,
     ];
 
     /**
@@ -61,7 +61,7 @@ class Kernel extends HttpKernel
         'guest' => \Biblioteca\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class
     ];
 
     /**
