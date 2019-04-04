@@ -112,5 +112,6 @@ Route::prefix('app')->group(function () {
     Route::post('ejemplares', 'AppController@getEjemplares');
     Route::post('pendientes', 'AppController@getMisPendientes');
     Route::post('reservar', 'AppController@reservar');
+    Route::post('cancelarReserva', 'AppController@cancelarReserva');
 });
     

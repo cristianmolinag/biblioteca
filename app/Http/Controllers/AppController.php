@@ -45,7 +45,24 @@ class AppController extends Controller
         $usuario = User::where('remember_token', $request->header('token'))->first();
 
         if ($usuario) {
-            $misReservas = Reserva::with('usuario', 'usuarioEstado', 'ejemplar', 'prestamo')->where('usuario_id', $usuario->id)->get();
+            $misReservas = Reserva::with('usuario', 'usuarioEstado', 'ejemplar')
+                ->where(function ($query) use ($usuario) {
+                    $query->where('usuario_id', $usuario->id);
+                })
+                ->where(function ($query) use ($request) {
+                    $query->whereHas('ejemplar', function ($query) use ($request) {
+                        $query->whereHas('libro', function ($query) use ($request) {
+                            $query->where('titulo', 'like', "%{$request->value}%")
+                                ->orWhere('isbn', 'like', "%{$request->value}%")
+                                ->orWhereHas('autor', function ($query) use ($request) {
+                                    $searchString = "%{$request->value}%";
+                                    $query->whereRaw("(CONCAT(autor.nombres,' ',autor.apellidos) like ?)", [$searchString]);
+                                })->orWhereHas('editorial', function ($query) use ($request) {
+                                $query->where('nombre', 'like', "%{$request->value}%");
+                            });
+                        })->orWhere('codigo', 'like', "%{$request->value}%");
+                    });
+            })->paginate(5);
             return response()->json($misReservas);
         } else {
             return response()->json([null, 403]);
@@ -55,16 +72,34 @@ class AppController extends Controller
     public function getMisPrestamos(Request $request)
     {
         $usuario = User::where('remember_token', $request->header('token'))->first();
-
         if ($usuario) {
-            $data = Prestamo::with('prestador', 'receptor', 'reserva')->whereHas('reserva', function ($query) use ($usuario) {
-                $query->where('usuario_id', $usuario->id);
-            })->get();
-            return response()->json([$data, 200]);
+
+            $data = Prestamo::with('prestador', 'receptor', 'reserva')
+                ->where(function ($query) use ($usuario) {
+                    $query->whereHas('reserva', function ($query) use ($usuario) {
+                        $query->where('usuario_id', $usuario->id);
+                    });
+                })->where(function ($query) use ($request) {
+                $query->whereHas('reserva', function ($query) use ($request) {
+                    $query->whereHas('ejemplar', function ($query) use ($request) {
+                        $query->whereHas('libro', function ($query) use ($request) {
+                            $query->where('titulo', 'like', "%{$request->value}%")
+                                ->orWhere('isbn', 'like', "%{$request->value}%")
+                                ->orWhereHas('autor', function ($query) use ($request) {
+                                    $searchString = "%{$request->value}%";
+                                    $query->whereRaw("(CONCAT(autor.nombres,' ',autor.apellidos) like ?)", [$searchString]);
+                                })->orWhereHas('editorial', function ($query) use ($request) {
+                                $query->where('nombre', 'like', "%{$request->value}%");
+                            });
+                        })->orWhere('codigo', 'like', "%{$request->value}%");
+                    });
+                });
+            })->paginate(5);
+            return response()->json($data, 200);
+
         } else {
             return response()->json([null, 403]);
         }
-
     }
 
     public function getMisPendientes(Request $request)
@@ -72,11 +107,7 @@ class AppController extends Controller
         $usuario = User::where('remember_token', $request->header('token'))->first();
 
         if ($usuario) {
-            //     $data = Prestamo::with('prestador', 'receptor', 'reserva')->whereHas('reserva', function ($query) use ($usuario) {
-            //         $query->where('usuario_id', $usuario->id);
-            //     })->where('fecha_devolucion_max', '<', date("Y-m-d H:i:s"))
-            //         ->get();
-            //     return response()->json($data);
+
             $misPendientes = Reserva::with('ejemplar', 'prestamo')->where(function ($query) use ($usuario) {
                 $query->where('usuario_id', $usuario->id);
             })
@@ -158,6 +189,30 @@ class AppController extends Controller
                 ], 200);
             }
 
+        } else {
+            return response()->json([null, 403]);
+        }
+    }
+
+    public function cancelarReserva(Request $request)
+    {
+        $usuario = User::where('remember_token', $request->header('token'))->first();
+
+        if ($usuario) {
+            $reserva = Reserva::find($request->reserva_id);
+
+            $reserva->estado = 'Cancelado';
+            $ejemplar = Ejemplar::find($reserva->ejemplar_id);
+            $ejemplar->estado = 'Disponible';
+
+            $reserva->save();
+            $ejemplar->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => null,
+                'message' => 'reserva cancelada con éxito',
+            ], 200);
         } else {
             return response()->json([null, 403]);
         }

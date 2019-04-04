@@ -31,14 +31,24 @@ class ReservaController extends Controller
 
     public function store(Request $request)
     {
+        $usuario = Auth::user();
 
-        if (Auth::user()->tipo_usuario != 'Administrador') {
+        if ($usuario->tipo_usuario != 'Administrador') {
 
-            $ejemplar = Ejemplar::Find($request->id);
-            $usuario = Auth::user();
-            $prestamos = Reserva::where('usuario_id', $usuario->id)->where('estado', 'Prestado')->get();
+            $misPendientes = Reserva::where(function ($query) use ($usuario) {
+                $query->where('usuario_id', $usuario->id);
+            })
+                ->where(function ($query) use ($usuario) {
+                    $query->where('estado', 'reservado')
+                        ->orWhere('estado', 'prestado');
+                })->get();
 
-            if ($prestamos->count() < 3) {
+            if (count($misPendientes) >= 3) {
+                return redirect()->route('reserva.nuevo')->with('error', 'No puede reservar el ejemplar. Tiene pendientes 3 préstamos o reservas');
+            } else {
+
+                $ejemplar = Ejemplar::Find($request->ejemplar_id);
+
                 Reserva::create([
                     'usuario_id' => $usuario->id,
                     'ejemplar_id' => $ejemplar->id,
@@ -49,10 +59,9 @@ class ReservaController extends Controller
                 $ejemplar->estado = 'Reservado';
                 $ejemplar->save();
 
-                return redirect()->route('reserva.index')->with('message', 'Reserva registrada con éxito!');
-            } else {
-                return redirect()->route('reserva.nuevo')->with('error', 'No puede reservar el ejemplar, ya cuenta con 3 préstamos sin devolver');
+                return redirect()->route('reserva.index')->with('message', 'reserva realizada con éxito, por favor acérquese a la biblioteca para la entrega del ejemplar');
             }
+
         }
     }
 
@@ -108,77 +117,5 @@ class ReservaController extends Controller
 
         return redirect()->route('reserva.index')->with('message', $mensaje);
     }
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'documento' => 'required|string|max:17|exists:usuario',
-    //         'codigo' => 'required|string|max:13|exists:ejemplar',
-    //     ]);
 
-    //     $usuario = User::where('documento', $request->documento)->first();
-    //     $prestamos = Prestamo::where('usuario_id', $usuario->id)->get();
-
-    //     if($prestamos->count() < 3){
-
-    //         $fecha_prestamo = date("Y-m-d H:i:s");
-    //         $fecha_devolucion_max = date ("Y-m-d H:i:s", strtotime ( '+3 day' , strtotime ( $fecha_prestamo )));
-    //         $ejemplar = Ejemplar::where('codigo', $request->codigo)->first();
-
-    //         Prestamo::create([
-    //             'prestador_id' => Auth::user()->id,
-    //             'usuario_id' => $usuario->id,
-    //             'ejemplar_id' => $ejemplar->id,
-    //             'fecha_prestamo' => $fecha_prestamo,
-    //             'fecha_devolucion_max' => $fecha_devolucion_max
-    //         ]);
-
-    //         $ejemplar->estado = true;
-    //         $ejemplar->save();
-
-    //         return redirect()->route('prestamo')->with('message', 'Prestamo registrado con éxito!');
-    //     }
-    //     else{
-    //         return redirect()->route('prestamo.nuevo')->with('error', 'El usuario '. $usuario->nombres .' '.$usuario->apellidos . ' tiene 3 prestamos pendientes por devolver');
-    //     }
-    // }
-
-    // public function show($id){
-    //     if(Auth::user()->tipo_usuario == 'Administrador'){
-    //         $data = Prestamo::with('usuario', 'prestador', 'ejemplar', 'receptor')->find($id);
-    //     }
-    //     else{
-    //         $data = Prestamo::where('usuario_id', Auth::user()->id)->where('id',$id)->with('usuario', 'prestador', 'ejemplar', 'receptor')->first();
-    //     }
-
-    //     if($data){
-    //         return view('prestamo.detalle', compact('data'));
-    //     }
-    //     else{
-    //         return redirect('/home');
-    //     }
-    // }
-
-    // public function historial(){
-    //     if(Auth::user()->tipo_usuario == 'Administrador'){
-    //         $data = Prestamo::with('usuario', 'prestador', 'ejemplar')->get();
-    //     }
-    //     else{
-    //         $data = Prestamo::with('usuario', 'prestador', 'ejemplar')->where('usuario_id', Auth::user()->id)->get();
-    //     }
-    //     return view('prestamo.historial', compact('data'));
-    // }
-
-    // public function update(Request $request, $id){
-
-    //     $data = Prestamo::find($id);
-    //     $data->fecha_devolucion = date("Y-m-d H:i:s");
-    //     $data->receptor_id = Auth::user()->id;
-    //     $data->save();
-
-    //     $ejemplar = Ejemplar::find($data->id);
-    //     $ejemplar->estado = false;
-    //     $ejemplar->save();
-
-    //     return redirect()->route('prestamo')->with('message', 'Ejemplar devuelto con éxito!');
-    // }
 }

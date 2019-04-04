@@ -27,21 +27,21 @@
                     </thead>
                     <tbody>
                         @foreach($data as $row)
-                        @if(!$row->prestamo->fecha_devolucion)
+                        <!-- @if(!$row->fecha_devolucion) -->
                         <tr>
-                            <td class="text-center">{!! $row->id !!}</td>
-                            <td class="text-center">{!!$row->ejemplar->codigo !!}</td>
-                            <td class="text-center">{!!$row->ejemplar->libro->titulo!!}</td>
+                            <td class="text-center">{!! $row->reserva->id !!}</td>
+                            <td class="text-center">{!!$row->reserva->ejemplar->codigo !!}</td>
+                            <td class="text-center">{!!$row->reserva->ejemplar->libro->titulo!!}</td>
                             @if(Auth::user()->tipo_usuario == 'Administrador')
-                            <td class="text-center">{!!$row->usuario->nombres .' '. $row->usuario->apellidos !!}</td>
+                            <td class="text-center">{!!$row->reserva->usuario->nombres .' '. $row->reserva->usuario->apellidos !!}</td>
                             @endif
-                            <td class="text-center">{!!$row->prestamo->prestador->nombres .' '. $row->prestamo->prestador->apellidos !!}</td>
-                            <td class="text-center">{!! $row->prestamo->fecha_prestamo !!}</td>
+                            <td class="text-center">{!!$row->prestador->nombres .' '. $row->prestador->apellidos !!}</td>
+                            <td class="text-center">{!! $row->fecha_prestamo !!}</td>
                             <td class="text-center">
                                 <a class="" href="{{ route('prestamo.show', ['id' => $row->id]) }}">Detalle</a>
                             </td>
                         </tr>
-                        @endif
+                        <!-- @endif -->
                         @endforeach
                     </tbody>
                 </table>
