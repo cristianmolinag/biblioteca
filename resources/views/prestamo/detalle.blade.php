@@ -136,7 +136,7 @@
             </div>
             <br>
             @if($data->reserva->estado && Auth::user()->tipo_usuario == 'Administrador')
-            <form method="POST" action="{{ route('prestamo.update', ['id' => $data->id]) }}">
+            <form method="POST" action="{{ route('prestamo.update', ['id' => $data->reserva->id]) }}">
                 @method('PUT')
                 @csrf
                 <button type="submit" class="btn main-color text-light btn-block">Devolver</button>
